@@ -2,16 +2,17 @@
 
 #include "ISorter.h"
 #include "../pointers/UniquePtr.h"
+#include "../pointers/SharedPtr.h"
 
 template<class T>
 class InsertionSorter : public ISorter<T> {
 public:
-    void sort(UniquePtr<ds::Sequence<T>> &sequence,
+    void sort(SharedPtr<ds::Sequence<T>> sequence,
               std::function<bool(const T &, const T &)> comp = std::less<T>()) override {
         insertionSort(sequence, 0, sequence->getLength() -1 , comp);
     }
 
-    void insertionSort(UniquePtr<ds::Sequence<T>> &sequence , int low, int high,
+    void insertionSort(SharedPtr<ds::Sequence<T>> sequence , int low, int high,
               std::function<bool(const T &, const T &)> comp = std::less<T>()) {
         for (auto i = low + 1; i != high; ++i) {
             int size = sequence->getLength();

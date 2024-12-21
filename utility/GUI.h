@@ -72,6 +72,14 @@ public:
         compareButton = new QPushButton("Compare Sorts", this);
         layout->addWidget(compareButton);
 
+        // Write and Read Sequence Buttons
+        auto *fileOperationsLayout = new QHBoxLayout();
+        writeToFileButton = new QPushButton("Write Sequence to File", this);
+        readFromFileButton = new QPushButton("Read Sequence from File", this);
+        fileOperationsLayout->addWidget(writeToFileButton);
+        fileOperationsLayout->addWidget(readFromFileButton);
+        layout->addLayout(fileOperationsLayout);
+
         // Connect signals to slots
         connect(generateButton, &QPushButton::clicked, this, &SortingApp::generateSequence);
         connect(quickSortButton, &QPushButton::clicked, this, &SortingApp::quickSort);
@@ -79,6 +87,8 @@ public:
         connect(bubbleSortButton, &QPushButton::clicked, this, &SortingApp::bubbleSort);
         connect(insertionSortButton, &QPushButton::clicked, this, &SortingApp::insertionSort);
         connect(compareButton, &QPushButton::clicked, this, &SortingApp::compareSorts);
+        connect(writeToFileButton, &QPushButton::clicked, this, &SortingApp::writeSequenceToFile);
+        connect(readFromFileButton, &QPushButton::clicked, this, &SortingApp::readSequenceFromFile);
     }
 
 private slots:
@@ -89,25 +99,20 @@ private slots:
             generatedSequenceText->setText("Invalid size.");
             return;
         }
-        UniquePtr<ds::Sequence<Student>> newSequence(new ds::ListSequence<Student>());
-        sequence = std::move(newSequence);
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_int_distribution<> ageDis(18, 25);
-        std::uniform_real_distribution<> scoreDis(2.0, 5.0);
-        std::uniform_int_distribution<> courseDis(1, 4);
-
-        for (int i = 0; i < size; ++i) {
-            sequence->append( Student(
-                "Name" + std::to_string(i + 1),
-                "Surname" + std::to_string(i + 1),
-                courseDis(gen),
-                ageDis(gen),
-                scoreDis(gen)));
-        }
-
+        sequence = generateStudentSequence(size);
         generatedSequenceText->setText(sequenceToString(sequence));
         sortedSequenceText->clear();
+    }
+
+    void readSequenceFromFile() {
+
+        sequence = readStudentSequenceFromFile("InputFile");
+        generatedSequenceText->setText(sequenceToString(sequence));
+        sortedSequenceText->clear();
+    }
+
+    void writeSequenceToFile() {
+        writeStudentSequenceToFile(sequence, "OutputFile");
     }
 
     void quickSort() {
@@ -143,26 +148,21 @@ private slots:
     }
 
     void compareSorts() {
-        QuickSorter<Student> quickSorter = QuickSorter<Student>();
+        SharedPtr<ISorter<Student>> quickSorter(new QuickSorter<Student>());
         auto quickSortSample = sequence->copy();
         auto quickTime = SortUtils<Student>::sortDuration(quickSortSample, quickSorter,Student::compareByAverageScore);
-        quickSortSample.release();
 
-        ShellSorter<Student> shellSorter = ShellSorter<Student>();
+        SharedPtr<ISorter<Student>> shellSorter(new ShellSorter<Student>());
         auto shellSortSample = sequence->copy();
         auto shellTime = SortUtils<Student>::sortDuration(shellSortSample, shellSorter,Student::compareByAverageScore);
-        shellSortSample.release();
 
-
-        BubbleSorter<Student> bubbleSorter = BubbleSorter<Student>();
+        SharedPtr<ISorter<Student>> bubbleSorter(new BubbleSorter<Student>());
         auto bubbleSortSample = sequence->copy();
         auto bubbleTime = SortUtils<Student>::sortDuration(bubbleSortSample, bubbleSorter,Student::compareByAverageScore);
-        bubbleSortSample.release();
 
-        InsertionSorter<Student> insertionSorter = InsertionSorter<Student>();
+        SharedPtr<ISorter<Student>> insertionSorter(new InsertionSorter<Student>());
         auto insertionSortSample = sequence->copy();
         auto insertionTime = SortUtils<Student>::sortDuration(insertionSortSample, insertionSorter,Student::compareByAverageScore);
-        insertionSortSample.release();
 
 
         std::ostringstream result;
@@ -175,7 +175,7 @@ private slots:
     }
 
 private:
-    UniquePtr<ds::Sequence<Student>> sequence;
+    SharedPtr<ds::Sequence<Student>> sequence;
 
     QLineEdit *sizeInput;
     QPushButton *generateButton;
@@ -186,8 +186,10 @@ private:
     QPushButton *insertionSortButton;
     QTextEdit *sortedSequenceText;
     QPushButton *compareButton;
+    QPushButton *writeToFileButton;
+    QPushButton *readFromFileButton;
 
-    QString sequenceToString( UniquePtr<ds::Sequence<Student>> &seq) {
+    QString sequenceToString( SharedPtr<ds::Sequence<Student>> seq) {
         std::ostringstream oss;
         for (size_t i = 0; i < seq->getLength(); ++i) {
             if (i > 0) oss << "\n";
@@ -199,4 +201,3 @@ private:
         return QString::fromStdString(oss.str());
     }
 };
-

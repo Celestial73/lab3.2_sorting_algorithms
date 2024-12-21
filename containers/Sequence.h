@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../pointers/UniquePtr.h"
+#include "../pointers/SharedPtr.h"
+
 
 namespace ds {
     template <class T>
@@ -16,7 +18,7 @@ namespace ds {
         virtual void set(int index1, T value) = 0;
         virtual void swap(int index1, int index2) = 0;
         virtual UniquePtr<Sequence<T>> concat(Sequence<T> *Sequence) = 0;
-        virtual UniquePtr<Sequence<T>> copy() = 0;
+        virtual SharedPtr<Sequence<T>> copy() = 0;
         virtual UniquePtr<Sequence<T>> getSubsequence(int startIndex, int endIndex) = 0;
     };
 }

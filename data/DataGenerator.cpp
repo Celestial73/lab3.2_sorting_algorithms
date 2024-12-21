@@ -3,6 +3,7 @@
 #include <random>
 #include <cmath>
 
+
 int generateRandomNumber(int min, int max)
 {
     std::random_device rd;
@@ -81,7 +82,7 @@ Student generateStudent()
     {
         name = maleNames[generateRandomNumber(0, (int)maleNames.size() - 1)];
     }
-    return Student(std::move(name), std::move(surname), course, age, marks);
+    return Student(name, surname, course, age, marks);
 }
 
 void generateStudentArray(Student *arr, int size)
@@ -90,4 +91,86 @@ void generateStudentArray(Student *arr, int size)
     {
         arr[i] = generateStudent();
     }
+}
+
+SharedPtr<ds::Sequence<Student>> generateStudentSequence(int size)
+{
+    SharedPtr<ds::Sequence<Student>> newSequence(new ds::ListSequence<Student>());
+
+    for (int i = 0; i < size; ++i) {
+        newSequence->append( generateStudent());
+    }
+    return newSequence;
+}
+
+
+void writeStudentSequenceToFile(SharedPtr<ds::Sequence<Student>> seq, const std::string &filename) {
+    std::filesystem::path static_dir = "static";
+    std::cout << static_dir << std::endl;
+
+    if (!std::filesystem::exists(static_dir)) {
+        std::filesystem::create_directory(static_dir);
+    }
+
+    std::filesystem::path filepath = static_dir / filename;
+
+    std::ofstream ofs;
+    ofs.open(filepath);
+    if (!ofs.is_open()) {
+        throw std::runtime_error("Failed to open file: " + filepath.string());
+    }
+
+    for (int i = 0; i < seq->getLength(); i++)
+    {
+        Student s = seq->get(i);
+        ofs <<
+            "Name : " << s.getName() << " " << s.getSurname() <<
+            " Age: " << s.getAge() <<
+                " Score: "  << s.getAverageScore() <<
+                    " Course: " << s.getCourse() << " \n";
+    }
+
+    ofs.close();
+}
+
+SharedPtr<ds::Sequence<Student>> readStudentSequenceFromFile(const std::string &filename) {
+    std::filesystem::path static_dir = "static";
+    std::cout << "Reading from directory: " << static_dir << std::endl;
+
+    // Ensure the static directory exists
+    if (!std::filesystem::exists(static_dir)) {
+        std::filesystem::create_directory(static_dir);
+    }
+
+    // Create the full file path
+    std::filesystem::path filepath = static_dir / filename;
+
+    // Open the file
+    std::ifstream ifs(filepath);
+    if (!ifs.is_open()) {
+        throw std::runtime_error("Failed to open file: " + filepath.string());
+    }
+
+    // Create a new sequence for the students
+    SharedPtr<ds::Sequence<Student>> newSequence(new ds::ListSequence<Student>());
+
+    // Read and parse the file line by line
+    std::string line;
+    while (std::getline(ifs, line)) {
+        std::istringstream iss(line);
+        std::string buffer, name, surname, ageLabel, scoreLabel, courseLabel;
+        int age, course;
+        double score;
+        iss >> buffer >> buffer >> name >> surname >>  buffer >> ageLabel >>   buffer >> scoreLabel >> buffer >> courseLabel >> buffer;
+        std::istringstream ( ageLabel ) >> age;
+        std::istringstream ( scoreLabel ) >> score;
+        std::istringstream ( courseLabel ) >> course;
+        Student student(name, surname, course, age, score);
+        newSequence->append(student);
+    }
+
+    // Close the file
+    ifs.close();
+
+    return newSequence;
 }

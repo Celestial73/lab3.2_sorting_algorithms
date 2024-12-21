@@ -2,8 +2,7 @@
 
 #include <functional>
 #include "../containers/Sequence.h"
-#include "../pointers/UniquePtr.h"
-
+#include "../pointers/SharedPtr.h"
 
 template <class T>
 class ISorter
@@ -11,6 +10,6 @@ class ISorter
 public:
     virtual ~ISorter() = default;
 
-    virtual void sort(UniquePtr<ds::Sequence<T>>& sequence,
+    virtual void sort(SharedPtr<ds::Sequence<T>> sequence,
                       std::function<bool(const T &, const T &)> compare) = 0;
 };

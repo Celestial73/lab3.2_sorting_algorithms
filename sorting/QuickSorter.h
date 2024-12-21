@@ -5,20 +5,21 @@
 #include "ISorter.h"
 
 #include "../containers/Sequence.h"
-#include "../pointers/UniquePtr.h"
+
+
 
 template <class T>
 class QuickSorter : public ISorter<T>
 {
 public:
-    void sort(UniquePtr<ds::Sequence<T>>& sequence,
+    void sort(SharedPtr<ds::Sequence<T>> sequence,
               std::function<bool(const T &, const T &)> comp = std::less<T>()) override
     {
         quickSort(sequence, comp);
     }
 
 private:
-    int partition(UniquePtr<ds::Sequence<T>> &sequence, int low, int high,
+    int partition(SharedPtr<ds::Sequence<T>> sequence, int low, int high,
         std::function<bool(const T &, const T &)> comp = std::less<T>())
     {
         T pivot = sequence->get(high);
@@ -37,7 +38,7 @@ private:
         return i + 1;
     }
 
-    void quickSortHelper(UniquePtr<ds::Sequence<T>>& sequence, int low, int high,
+    void quickSortHelper(SharedPtr<ds::Sequence<T>> sequence, int low, int high,
         std::function<bool(const T &, const T &)> comp = std::less<T>())
     {
         if (low <  high)
@@ -49,7 +50,7 @@ private:
         }
     }
 
-    void quickSort(UniquePtr<ds::Sequence<T>> &sequence,
+    void quickSort(SharedPtr<ds::Sequence<T>> sequence,
         std::function<bool(const T &, const T &)> comp = std::less<T>())
     {
         int size = sequence->getLength();

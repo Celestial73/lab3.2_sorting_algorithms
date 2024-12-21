@@ -76,11 +76,11 @@ namespace ds
             return UniquePtr<Sequence<T>>(newSequence);
         }
 
-        UniquePtr<Sequence<T>> copy() {
+        SharedPtr<Sequence<T>> copy() {
             UniquePtr<LinkedList<T>> newList = UniquePtr<LinkedList<T>>(this->listData->copy());
             ListSequence<T> *newSequence = new ListSequence<T>();
             newSequence->listData = std::move(newList); // Transfer ownership of pointer
-            return UniquePtr<Sequence<T>>(newSequence);
+            return SharedPtr<Sequence<T>>(newSequence);
         }
 
 

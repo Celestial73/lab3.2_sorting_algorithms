@@ -13,7 +13,7 @@ public:
 
     Student() : name(""), surname(""), course(0), age(0), averageScore(0.0) {}
 
-    Student(const std::string &&name, const std::string &&surname, int course, int age, double averageScore)
+    Student( std::string &name,  std::string &surname, int course, int age, double averageScore)
         : name(name), surname(surname), course(course), age(age), averageScore(averageScore) {}
 
     ~Student() = default;

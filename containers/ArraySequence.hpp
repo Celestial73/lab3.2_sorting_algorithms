@@ -74,13 +74,13 @@ namespace ds
             }
         }
 
-        UniquePtr<Sequence<T>> copy(){
+        SharedPtr<Sequence<T>> copy(){
             UniquePtr<DynamicArray<T>> newArray = UniquePtr<DynamicArray<T>>();
             ArraySequence<T> *newSequence = new ArraySequence<T>();
             for (int i = 0; i < this->dataArray->getSize(); i++) {
                 newSequence->append(this->dataArray->get(i));
             }
-            return UniquePtr<Sequence<T>>(newSequence);
+            return SharedPtr<Sequence<T>>(newSequence);
          }
 
         // Returns the length of the sequence

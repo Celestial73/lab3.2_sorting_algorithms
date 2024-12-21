@@ -9,12 +9,12 @@
 template<class T>
 class BubbleSorter : public ISorter<T> {
 public:
-    void sort(UniquePtr<ds::Sequence<T>> & sequence,
+    void sort(SharedPtr<ds::Sequence<T>> sequence,
               std::function<bool(const T &, const T &)> comp = std::less<T>()) override {
         bubbleSort(sequence, 0, sequence->getLength() -1 , comp);
     }
 
-    void bubbleSort(UniquePtr<ds::Sequence<T>> & sequence, int start, int end,
+    void bubbleSort(SharedPtr<ds::Sequence<T>> sequence, int start, int end,
               std::function<bool(const T &, const T &)> comp = std::less<T>())  {
         int n = sequence->getLength();
         bool swapped;

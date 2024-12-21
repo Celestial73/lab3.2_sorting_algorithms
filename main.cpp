@@ -9,6 +9,7 @@ int main(int argc, char *argv[])
     window.show();
 
     testSorts();
-
+    testBackwardsDoubleSort();
+    testStudentComparators();
     return app.exec();
 }

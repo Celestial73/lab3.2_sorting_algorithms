@@ -22,3 +22,5 @@
 
 using namespace std;
 void testSorts();
+void testBackwardsDoubleSort();
+void testStudentComparators();
